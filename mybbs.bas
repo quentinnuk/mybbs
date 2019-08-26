@@ -9,7 +9,7 @@
    30  print "Welcome to Jadawin's place"
    40  print
    50  print "Username: ";
-   60  input usr$:rem DEBUG ONLY
+   60  usr$=user$:print usr$:REM input usr$:rem DEBUG ONLY
    70  input "Password: ",pass$
    80  open files$, as #1
    85  userno=0

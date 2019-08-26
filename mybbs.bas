@@ -9,7 +9,7 @@
    30  print "Welcome to Jadawin's place"
    40  print
    50  print "Username: ";
-   60  print user$
+   60  input usr$:rem DEBUG ONLY
    70  input "Password: ",pass$
    80  open files$, as #1
    85  userno=0
@@ -17,7 +17,7 @@
    91  userno=userno+1
   100  input# 1,userec$
   105  gosub 8200
-  110  if bbuser$<>user$ then 90
+  110  if bbuser$<>usr$ then 90
   120  if bbpass$<>pass$ then 9990
   125  sleep .5
   130  print:print "Welcome ";bbuser$
@@ -25,17 +25,18 @@
   132  recnum=userno
   135  gosub 9100
   136  lastdate$=date$
-  137  lastime$=time$
+  137  lasttime$=time$
   138  gosub 8300: rem pack up userec$
   139  print# 1,userec$
   140  close #1
   145  goto 200
-  150  Print "New User ";user$;
-  151  bbuser$=user$
+  150  Print "New User ";usr$;
+  151  bbuser$=usr$
   152  bbpass$=pass$
   153  lastdate$=date$
   154  lasttime$=time$
   155  lastmsg=0
+  156  userno=userno+1
   160  gosub 8300
   170  print# 1,userec$
   180  close #1
@@ -46,7 +47,7 @@
   201  open "mybbslog.dat", as #1
   202  gosub 9200: rem seek to eof
   203  rem log use
-  205  print# 1,date$ +"," +time$ + ","+user$
+  205  print# 1,date$ +"," +time$ + ","+usr$
   206  close #1
   207  files$="mybbsmsgs.dat"
   208  gosub 9300: rem find eof recnum
@@ -116,10 +117,10 @@
  5408  msgdate$=date$
  5410  msgtime$=time$
  5420  if len(msgsubj$)<1 then 5490
- 5430  msgsubj$="From: "+user$+" Subj: Re:"+right$(msgsubj$,len(msgsubj$)-instr(msgsubj$,"j: ")-3)
+ 5430  msgsubj$="From: "+bbuser$+" Subj: Re:"+right$(msgsubj$,len(msgsubj$)-instr(msgsubj$,"j: ")-3)
  5440  goto 5520
  5490  input "Subject; ",a$
- 5500  msgsubj$="From: "+user$+" Subj: "+a$
+ 5500  msgsubj$="From: "+bbuser$+" Subj: "+a$
  5520  print "Message, terminate with <CR>"
  5530  input ": ",a$
  5531  print:print "Post: K(eep, D(iscard: ";
@@ -183,10 +184,11 @@
  9100  rem Position file point at record recnum for file #1
  9110  r=recnum
  9120  gosub 9000
+ 9121  recnum=r
  9125  if eof(1)<0 then return
  9130  if r<2 then 9150
  9135  input# 1,a$
- 9140  r=r-1:recnum=recnum+1
+ 9140  r=r-1
  9145  goto 9125
  9150  return
  9200  rem append to file #1

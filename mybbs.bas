@@ -10,8 +10,13 @@
    40  print
    50  print "Username: ";
    60  usr$=user$:print usr$:REM input usr$:rem DEBUG ONLY
-   70  input "Password: ",pass$
-   80  open files$, as #1
+   70  pass$="":print "Password: ";
+   71  a$=inkey$: if a$=chr$(13) then 80
+   72  if a$=chr$(127) or a$=chr$(8) then pass$=left$(pass$,abs(len(pass$)-1)):print chr$(8)" "chr$(8);:goto 71
+   73  pass$=pass$+a$: print "*";
+   74  goto 71
+   80  print:if len(pass$)<1 then 70
+   82  open files$, as #1
    85  userno=0
    90  if eof(1)<0 then 150
    91  userno=userno+1

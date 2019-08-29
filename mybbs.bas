@@ -10,8 +10,13 @@
    40  print
    50  print "Username: ";
    60  usr$=user$:print usr$:REM input usr$:rem DEBUG ONLY
-   70  input "Password: ",pass$
-   80  open files$, as #1
+   70  pass$="":print "Password: ";
+   71  a$=inkey$: if a$=chr$(13) then 80
+   72  if a$=chr$(127) or a$=chr$(8) then pass$=left$(pass$,abs(len(pass$)-1)):print chr$(8)" "chr$(8);:goto 71
+   73  pass$=pass$+a$: print "*";
+   74  goto 71
+   80  print:if len(pass$)<1 then 70
+   82  open files$, as #1
    85  userno=0
    90  if eof(1)<0 then 150
    91  userno=userno+1
@@ -23,11 +28,10 @@
   130  print:print "Welcome ";bbuser$
   131  print:print "Your last logon was on ";lastdate$;" at ";lasttime$
   132  recnum=userno
-  135  gosub 9100
   136  lastdate$=date$
   137  lasttime$=time$
   138  gosub 8300: rem pack up userec$
-  139  print# 1,userec$
+  139  print# 1,userno;userec$
   140  close #1
   145  goto 200
   150  Print "New User ";usr$;
@@ -57,7 +61,7 @@
   212  print
   220  print "Command: M(essages, Q(uit: ";
   230  c$=inkey$
-  240  c$=chr$(asc(c$) mod 32 + 64)
+  240  c$=ups$(c$)
   250  if c$="Q" then print "Quit":goto 9800
   260  if c$="M" then print "Messages":gosub 300
   270  goto 212
@@ -66,7 +70,7 @@
   310  print
   320  print "Messages: N(ew, O(ld, P(ost, E(xit: ";
   330  c$=inkey$
-  340  c$=chr$(asc(c$) mod 32 + 64)
+  340  c$=ups$(c$)
   345  if c$="E" then print "Exit":goto 212
   350  if c$="N" then print "New":gosub 5000
   360  if c$="O" then print "Old":gosub 5200
@@ -87,7 +91,7 @@
  5100  print msgsubj$
  5110  print "Message: R(ead, N(ext, E(xit: ";
  5120  c$=inkey$
- 5130  c$=chr$(asc(c$) mod 32 + 64)
+ 5130  c$=ups$(c$)
  5140  if c$="N" then print "Next":goto 5065
  5141  if c$="E" then print "Exit":goto 5190
  5150  if c$<>"R" then print:goto 5110
@@ -95,7 +99,7 @@
  5160  print msgbody$
  5161  print:print "Message: R(eply, N(ext, E(xit: ";
  5162  c$=inkey$
- 5163  c$=chr$(asc(c$) mod 32 + 64)
+ 5163  c$=ups$(c$)
  5164  if c$="E" then print "Exit":goto 5190
  5165  if c$="R" then print "Reply":gosub 5405
  5166  print "Next"
@@ -125,7 +129,7 @@
  5530  input ": ",a$
  5531  print:print "Post: K(eep, D(iscard: ";
  5532  c$=inkey$
- 5533  c$=chr$(asc(c$) mod 32 + 64)
+ 5533  c$=ups$(c$)
  5534  if c$="D" then print "Discard":goto 5590
  5535  if c$<>"K" then 5531
  5536  print "Keep"
@@ -172,24 +176,16 @@
  8430  msgsubj$=mid$(msgrec$,18,instr(msgrec$,"|")-17)
  8440  msgbody$=right$(msgrec$,len(msgrec$)-(instr(msgrec$,"|")+1))
  8450  return
- 8490  return
  8500  rem pack msgrec$
  8510  msgrec$=msgdate$+msgtime$+msgsubj$+"|"+msgbody$
+ 8520  return
  8999  rem FILES$ contains file name, number is always 1
  9000  rem Restore file pointer to BOF for file #1
- 9010  close #1
- 9020  open files$, as #1
+ 9010  read #1,1
  9025  recnum=0
  9030  return
  9100  rem Position file point at record recnum for file #1
- 9110  r=recnum
- 9120  gosub 9000
- 9121  recnum=r
- 9125  if eof(1)<0 then return
- 9130  if r<2 then 9150
- 9135  input# 1,a$
- 9140  r=r-1
- 9145  goto 9125
+ 9110  read #1,recnum
  9150  return
  9200  rem append to file #1
  9210  rem seek to EOF file #1
